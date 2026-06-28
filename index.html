@@ -99,10 +99,21 @@
     width:90px; height:4px; background:rgba(255,255,255,0.4); border-radius:4px; z-index:6;
   }
 
-  /* tap zones for prev/next (avoid covering interactive game area) */
-  .tap-zone{ position:absolute; top:0; bottom:60px; width:26%; z-index:4; }
-  .tap-zone.left{ left:0; }
-  .tap-zone.right{ right:0; }
+  /* nav arrow buttons for prev/next */
+  .nav-arrow{
+    position:absolute; top:50%; transform:translateY(-50%);
+    width:36px; height:36px; border-radius:50%;
+    background:rgba(255,255,255,0.6); border:1px solid rgba(74,46,61,0.15);
+    color:var(--rose); font-size:18px; line-height:1; padding:0;
+    display:flex; align-items:center; justify-content:center;
+    z-index:6; cursor:pointer; box-shadow:0 4px 10px rgba(74,46,61,0.15);
+  }
+  .nav-arrow.left{ left:8px; }
+  .nav-arrow.right{ right:8px; }
+  .nav-arrow:active{ transform:translateY(-50%) scale(0.88); }
+  .page0-tap{
+    position:absolute; inset:0; z-index:3; background:transparent; border:none; padding:0; cursor:pointer;
+  }
 
   /* ---------- PAGE 0 : lock screen ---------- */
   #page0{
@@ -241,13 +252,14 @@
 
         <!-- PAGE 0 — lock screen -->
         <section class="page active entering" id="page0">
+          <button class="page0-tap" onclick="goTo(1)" aria-label="unlock"></button>
           <div class="lock-date">FRIDAY · JUNE 28</div>
           <div class="lock-time">11:59</div>
           <div class="lock-card"><b>🎀 reminder</b>be extra cute today, it's literally your day.</div>
           <div class="lock-card"><b>💬 your kaleshi</b>swipe up... I made you something.</div>
           <div class="lock-bottom">
             <div class="chev">⌃</div>
-            <div class="lock-hint">tap anywhere to unlock</div>
+            <button class="lock-hint" style="background:none;border:none;color:#fff;opacity:.85;font-family:'Quicksand',sans-serif;cursor:pointer;padding:0;margin-top:4px;" onclick="goTo(1)">tap anywhere to unlock</button>
           </div>
         </section>
 
@@ -280,6 +292,9 @@
             <div class="card"><img src="mirror.jpg" alt=""><p>hiding your face, still the main character</p></div>
           </div>
           <div class="gal-foot">‹ swipe for more ›</div>
+          <div style="text-align:center; padding-bottom:14px; flex-shrink:0;">
+            <button class="btn btn-yes" style="position:static; padding:9px 20px; font-size:12.5px;" onclick="goTo(3)">next →</button>
+          </div>
         </section>
 
         <!-- PAGE 3 — do you love me -->
@@ -308,8 +323,8 @@
           </div>
         </section>
 
-        <div class="tap-zone left" id="tapLeft"></div>
-        <div class="tap-zone right" id="tapRight"></div>
+        <button class="nav-arrow left" id="tapLeft" aria-label="previous">‹</button>
+        <button class="nav-arrow right" id="tapRight" aria-label="next">›</button>
       </div>
       <div class="home-indicator"></div>
     </div>
@@ -340,15 +355,17 @@
     p.classList.add('entering');
     for(let i=0;i<TOTAL;i++) dotEls[i].classList.toggle('active', i===current);
 
+    const arrows = document.querySelectorAll('.nav-arrow');
+    arrows.forEach(a=> a.style.display = (current===3) ? 'none' : 'flex');
+
     if(current===1) startChat();
     if(current===4) startFinale();
     if(current!==4) stopFinale();
     if(current!==3) resetGame();
   }
 
-  document.getElementById('page0').addEventListener('click', ()=>goTo(1));
-  document.getElementById('tapLeft').addEventListener('click', ()=>{ if(current!==3) goTo(current-1); });
-  document.getElementById('tapRight').addEventListener('click', ()=>{ if(current!==3) goTo(current+1); });
+  document.getElementById('tapLeft').addEventListener('click', ()=>{ goTo(current-1); });
+  document.getElementById('tapRight').addEventListener('click', ()=>{ goTo(current+1); });
 
   // swipe support
   let touchX = null;
@@ -418,39 +435,7 @@
   function resetGame(){
     noBtn.style.left=''; noBtn.style.top=''; noBtn.style.transform='translateX(-50%)';
     yesBtn.style.transform='translateX(-50%)';
-    document.getElementById('reply').textContent='';
-  }
-  function sayYes(){
-    document.getElementById('reply').textContent = "knew it. good choice 😌";
-    burstConfetti();
-    setTimeout(()=>goTo(4), 1300);
-  }
-
-  // ---------- confetti ----------
-  const canvas = document.getElementById('confetti-canvas');
-  const ctx = canvas.getContext('2d');
-  let confettiParticles = [];
-  let confettiRunning = false;
-  function sizeCanvas(){
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
-  }
-  const colors = ['#FF8FAE','#F3C76B','#B9A4DE','#FFFFFF','#DE5179'];
-  function spawnParticle(burst){
-    return {
-      x: Math.random()*canvas.width,
-      y: burst ? canvas.height*0.4 + Math.random()*40 : -10,
-      vx: (Math.random()-0.5)*(burst?5:1.2),
-      vy: burst ? -(Math.random()*5+3) : (Math.random()*1.2+0.6),
-      size: Math.random()*5+4,
-      color: colors[Math.floor(Math.random()*colors.length)],
-      rot: Math.random()*360,
-      vr: (Math.random()-0.5)*8,
-      grav: burst ? 0.22 : 0.04
-    };
-  }
-  function burstConfetti(){
-    size------- */
+    document.getElementById('reply------- */
   .dots{ display:flex; gap:7px; }
   .dot{ width:7px; height:7px; border-radius:50%; background:#E8C7D2; cursor:pointer; transition:.25s; }
   .dot.active{ background:var(--rose); width:18px; border-radius:5px; }
